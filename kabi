@@ -1,0 +1,46 @@
+__author__ = 'kabi'
+#!/usr/bin/python
+# coding=<utf-8>
+
+import openpyxl
+from openpyxl import load_workbook
+import requests
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+
+kabi = []
+def main():
+
+    url = 'http://mooc.guokr.com/apis/academy/course_list.json?retrieve_type=by_params&limit=5000&offset=0'
+    r = requests.get(url)
+    res = r.json()
+    res_cou = res['result']['courses']
+    f = open(r'result.txt', 'w')
+    for i in res_cou:
+        ch_name = i['chinese_name']
+        name = i['name']
+        date = i['date_status']
+        fav = i['stat']['followers_count']
+        type_n = i['depts']
+        type = ' '.join(type_n)
+        kabi.append([ch_name, name, date, fav, type])
+        
+    write_excel()
+
+def write_excel():
+    wb = load_workbook(filename = 'haha.xlsx')
+    ws = wb['data']
+
+    for i in range(1,len(kabi)):
+        ws.cell(row = i+1, column = 1).value = kabi[i][0]
+        ws.cell(row = i+1, column = 2).value = kabi[i][1]
+        ws.cell(row = i+1, column = 3).value = kabi[i][2]
+        ws.cell(row = i+1, column = 4).value = kabi[i][3]
+        ws.cell(row = i+1, column = 5).value = kabi[i][4]
+
+    wb.save(filename = 'haha.xlsx')
+
+if  __name__ == '__main__':
+    main()
